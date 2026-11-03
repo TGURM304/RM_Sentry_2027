@@ -14,15 +14,18 @@
 #include "utils/logger.h"
 #include "utils/os.h"
 #include "utils/terminal.h"
-extern void example_task(void *args);
+#include "../config.hpp"
 
-static constexpr music::tone_t ready_tone[] {
-    { 4500, 75 },
-    { 0, 50 },
-    { 4500, 75 },
+extern void chassis_task(void* args);
+extern void odometry_task(void* args);
+
+static constexpr music::tone_t ready_tone[]{
+    {4500, 75},
+    {0, 50},
+    {4500, 75},
 };
 
-extern "C" [[noreturn]] void app_entrance(void *args) {
+extern "C" [[noreturn]] void app_entrance(void* args) {
     uint32_t hw_failed = bsp_hw_init();
 
     bsp_led_set(hw_failed == 0 ? 0 : 50, hw_failed == 0 ? 50 : 0, 0);
@@ -53,8 +56,13 @@ extern "C" [[noreturn]] void app_entrance(void *args) {
     music::play_blocking(ready_tone);
 
     // Init Application Tasks
+    static os::queue<app::WheelFeedback> wheel_mailbox(1);
     BSP_ASSERT(os::task::static_create(
-        example_task, nullptr, "example_task", 512, os::task::Priority::HIGH
+        chassis_task, &wheel_mailbox, "chassis_task", 512, os::task::Priority::HIGH
+    ));
+
+    BSP_ASSERT(os::task::static_create(
+        odometry_task, &wheel_mailbox, "odometry_task", 512, os::task::Priority::HIGH
     ));
 
     for (;;) {
