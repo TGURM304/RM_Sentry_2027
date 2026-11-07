@@ -4,14 +4,14 @@
 
 #include "utils/os.h"
 
-#include "../config.hpp"
+#include "app_config.hpp"
 
 [[noreturn]] void odometry_task(void* args) {
     auto& mailbox = *static_cast<os::queue<app::WheelFeedback>*>(args);
+    app::WheelFeedback wheel_feedback{};
 
     for (;;) {
-        app::WheelFeedback feedback{};
-        if (mailbox.receive(feedback)) {
+        if (mailbox.receive(wheel_feedback)) {
 
         }
 

@@ -14,7 +14,7 @@
 #include "utils/logger.h"
 #include "utils/os.h"
 #include "utils/terminal.h"
-#include "../config.hpp"
+#include "../include/app_config.hpp"
 
 extern void chassis_task(void* args);
 extern void odometry_task(void* args);
@@ -55,7 +55,8 @@ extern "C" [[noreturn]] void app_entrance(void* args) {
 
     music::play_blocking(ready_tone);
 
-    // Init Application Tasks
+    // 底盘部分
+    #ifdef COMPILE_CHASSIS
     static os::queue<app::WheelFeedback> wheel_mailbox(1);
     BSP_ASSERT(os::task::static_create(
         chassis_task, &wheel_mailbox, "chassis_task", 512, os::task::Priority::HIGH
@@ -64,6 +65,12 @@ extern "C" [[noreturn]] void app_entrance(void* args) {
     BSP_ASSERT(os::task::static_create(
         odometry_task, &wheel_mailbox, "odometry_task", 512, os::task::Priority::HIGH
     ));
+    #endif
+
+    // 云台部分
+    #ifdef COMPILE_GIMBAL
+
+    #endif
 
     for (;;) {
         if (hw_failed == 0) {

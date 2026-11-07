@@ -7,7 +7,7 @@
 #### step1. 克隆项目代码
 
 ```shell
-git clone https://github.com/lym12321/trobot.git --recursive
+git clone https://github.com/TGURM304/RM_Sentry_2027.git --recursive
 ```
 
 > [!IMPORTANT]
