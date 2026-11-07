@@ -11,10 +11,9 @@
     app::WheelFeedback wheel_feedback{};
 
     for (;;) {
-        if (mailbox.receive(wheel_feedback)) {
+        if (mailbox.receive(wheel_feedback, portMAX_DELAY)) {
 
         }
 
-        os::task::sleep(1);
     }
 }
